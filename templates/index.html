@@ -1,0 +1,85 @@
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Vehicle Maintenance Scheduler</title>
+        <link rel="stylesheet" href="/static/style.css">
+    </head>
+    <body>
+        <button class="theme-toggle" id="theme-toggle">🌙</button>  
+    <div class="container">
+        <h2>Vehicle Maintenance Schedule</h2>
+        <p>Welcome, {{ current_user.name or current_user.mobile }}! <a href="{{ url_for('profile') }}">Profile</a> | <a href="{{ url_for('logout') }}">Logout</a></p>
+        
+        <h3>Manage Your Vehicles</h3>
+        <form method="POST">
+            <input type="hidden" name="update_odo" value="1">
+            {% for vehicle in vehicles %}
+            <div>
+                <input type="checkbox" id="check_{{ vehicle }}" name="check_{{ vehicle }}" {% if vehicle in user_vehicles %}checked{% endif %}>
+                <label for="check_{{ vehicle }}">{{ vehicle }}</label>
+                <input type="number" name="odo_{{ vehicle }}" value="{{ user_vehicles.get(vehicle, {}).odometer or 0 }}" placeholder="Odometer reading">
+            </div>
+            {% endfor %}
+            <button type="submit">Update Vehicles</button>
+        </form>
+
+        {% if due_services %}
+        <div class="warning">
+            <h3>Service Reminders</h3>
+            <ul>
+                {% for service in due_services %}
+                <li>{{ service }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <h3>Check Maintenance</h3>
+        <form method="POST">
+            <label>Select Vehicle</label>
+            <select name="vehicle">
+                {% for vehicle in vehicles %}
+                    {% if vehicle in user_vehicles %}
+                    <option value="{{ vehicle }}" {% if vehicle == selected_vehicle %}selected{% endif %}>{{ vehicle }} ({{ user_vehicles[vehicle].odometer }} km)</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <button type="submit">Check Maintenance</button>
+        </form>
+        {% if tasks %}
+        <div class="result">
+            <p class="highlight">Maintenance Tasks</p>
+            {% for task in tasks %}
+                <p class="important">{{ task }}: {{ serviced_status.get(task, 'Unknown') }}</p>
+                {% if 'Due' in serviced_status.get(task, '') %}
+                <form method="POST" style="display:inline;">
+                    <input type="hidden" name="service_vehicle" value="{{ selected_vehicle }}">
+                    <input type="hidden" name="service_task" value="{{ task }}">
+                    <button type="submit" name="mark_serviced">Mark as Serviced</button>
+                </form>
+                {% endif %}
+            {% endfor %}
+            <p class="note">Service within 100 km</p>
+        </div>
+        {% endif %}
+    </div>
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+    </script>
+    </body>
+    </html>

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns="http://www.vehiclemaintenance.org#">
+
+    <owl:Ontology rdf:about="http://www.vehiclemaintenance.org"/>
+
+    <!-- Classes -->
+    <owl:Class rdf:about="#Vehicle"/>
+    <owl:Class rdf:about="#Bike"/>
+    <owl:Class rdf:about="#VehiclePart"/>
+    <owl:Class rdf:about="#MaintenanceTask"/>
+
+    <!-- Object Properties -->
+    <owl:ObjectProperty rdf:about="#hasPart">
+        <rdfs:domain rdf:resource="#Vehicle"/>
+        <rdfs:range rdf:resource="#VehiclePart"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#requiresTask">
+        <rdfs:domain rdf:resource="#VehiclePart"/>
+        <rdfs:range rdf:resource="#MaintenanceTask"/>
+    </owl:ObjectProperty>
+
+    <!-- Individuals -->
+    <owl:NamedIndividual rdf:about="#Bike_01">
+        <rdf:type rdf:resource="#Bike"/>
+        <hasPart rdf:resource="#EngineOil"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#EngineOil">
+        <rdf:type rdf:resource="#VehiclePart"/>
+        <requiresTask rdf:resource="#OilChange"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#OilChange">
+        <rdf:type rdf:resource="#MaintenanceTask"/>
+    </owl:NamedIndividual>
+
+</rdf:RDF>
